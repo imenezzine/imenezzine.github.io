@@ -15,6 +15,7 @@ const ideas = await getSorted('ideas');
         {Object.values(STATUS).map((s) => <li><span>{s.emoji} <strong>{s.label}</strong></span> <span class="muted">{s.hint}</span></li>)}
       </ul>
     </PageHead>
+    {ideas.length === 0 && <p class="muted">Le jardin est encore vide : les premières graines arrivent bientôt 🌱</p>}
     <div class="grid">
       {
         ideas.map((idea) => {

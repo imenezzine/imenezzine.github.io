@@ -30,9 +30,12 @@ Crée un fichier `.md` (ou `.mdx`) dans le bon dossier de `src/content/`. Le nom
 | `projets/`  | `/projets`  | `title`, `description`, `url`, `repo`, `stack`, `status`, `featured`, `order` |
 | `til/`      | `/til`      | `title`, `date`, `tags` |
 
-Les pages `/uses`, `/now` et `/a-propos` se modifient directement dans `src/pages/*.md`.
+La page `/a-propos` se modifie directement dans `src/pages/a-propos.md`.
 
-Les fichiers de `src/content/` sont des exemples : supprime-les ou remplace-les.
+Les sections Idées, TIL et Projets sont masquées du menu et de l'accueil tant qu'elles sont vides :
+elles apparaissent dès que tu ajoutes un premier fichier dans leur dossier.
+
+Les commentaires d'auditeurs (anonymes) sont dans `src/content/commentaires.json`.
 
 ## Importer mes articles Medium
 

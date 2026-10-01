@@ -53,7 +53,5 @@ export const NAV = [
 export const NAV_MORE = [
   { href: '/retours', label: 'Retours d’écoute' },
   { href: '/tags', label: 'Tags' },
-  { href: '/uses', label: 'Uses' },
-  { href: '/now', label: 'Now' },
   { href: '/a-propos', label: 'À propos' },
 ] as const;

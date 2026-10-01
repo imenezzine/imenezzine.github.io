@@ -6,6 +6,7 @@ import SocialLinks from '../components/SocialLinks.astro';
 import PostList from '../components/PostList.astro';
 import { SITE, PODCAST } from '../site.config';
 import { formatDate, getSorted, readingTime, splitTalks } from '../lib/utils';
+import { withContent } from '../lib/nav';
 
 const articles = (await getSorted('articles')).slice(0, 3);
 const [latestEpisode] = await getSorted('podcast');
@@ -16,14 +17,14 @@ const projects = (await getCollection('projects'))
   .slice(0, 3);
 const til = (await getSorted('til')).slice(0, 4);
 
-const tiles = [
+const tiles = await withContent([
   { href: '/articles', label: 'Articles', emoji: '✍️', color: 'pink', text: 'Tutos, retours d’expérience et réflexions.' },
   { href: '/talks', label: 'Talks', emoji: '🎤', color: 'violet', text: 'Mes conférences, slides et vidéos.' },
   { href: '/podcast', label: 'Podcast', emoji: '🎧', color: 'orange', text: `Tous les épisodes de ${PODCAST.name}.` },
   { href: '/projets', label: 'Projets', emoji: '🛠️', color: 'teal', text: 'Ce que je construis, en open source ou pas.' },
   { href: '/idees', label: 'Idées', emoji: '💡', color: 'yellow', text: 'Mon jardin d’idées, en train de pousser.' },
-  { href: '/retours', label: 'Retours d’écoute', emoji: '📝', color: 'blue', text: 'Mes notes sur les épisodes que j’écoute.' },
-];
+  { href: '/retours', label: 'Retours d’écoute', emoji: '📝', color: 'blue', text: 'Ce que les auditeurs disent du podcast.' },
+]);
 ---
 
 <BaseLayout>

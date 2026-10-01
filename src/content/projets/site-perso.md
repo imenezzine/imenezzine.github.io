@@ -1,7 +1,8 @@
 ---
 title: Ce site !
 description: Mon site perso, construit avec Astro. Articles, talks, podcast et idées au même endroit.
-repo: https://github.com/imenezzine
+url: https://imenezzine.github.io
+repo: https://github.com/imenezzine/imenezzine.github.io
 stack: [Astro, TypeScript, CSS]
 status: actif
 featured: true

@@ -11,11 +11,9 @@ accent: pink
 
 Je suis **Imen Ezzine**, développeuse PHP & Symfony chez [SensioLabs](https://sensiolabs.com) depuis 2021.
 
-_À compléter : ton parcours avant SensioLabs, ce qui te passionne…_
-
 ## Ce que je fais
 
-- ✍️ J'écris des [articles](/articles) et des notes rapides ([TIL](/til))
+- ✍️ J'écris des [articles](/articles), sur Medium et sur le blog de SensioLabs
 - 🎤 Je donne des [talks](/talks) en conférence et en meetup
 - 🎧 J'anime le podcast [Café Tech avec Imen](/podcast), sur [YouTube](https://www.youtube.com/@Caf%C3%A9TechavecImen)
 - 🛠️ Je construis des [projets](/projets)
