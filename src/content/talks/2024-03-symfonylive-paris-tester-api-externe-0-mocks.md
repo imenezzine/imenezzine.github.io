@@ -7,6 +7,7 @@ date: 2024-03-28
 location: Paris
 lang: fr
 format: conférence
+slides: https://slides.com/imenezzine/symfony-live-2024
 tags: [tests, php-vcr, symfony, api]
 ---
 

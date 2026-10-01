@@ -12,6 +12,8 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const t = entry.data;
 const isPdf = t.slides?.endsWith('.pdf');
+// slides.com propose une version intégrable de chaque présentation
+const slidesEmbed = isPdf ? t.slides : t.slides?.match(/^https:\/\/slides\.com\/[^/]+\/[^/?#]+/)?.[0]?.concat('/embed');
 const video = t.video ? youtubeEmbed(t.video) : undefined;
 ---
 
@@ -45,7 +47,7 @@ const video = t.video ? youtubeEmbed(t.video) : undefined;
       />
     )
   }
-  {isPdf && <iframe slot="before" class="slides" src={t.slides} title={`Slides : ${t.title}`} loading="lazy"></iframe>}
+  {slidesEmbed && <iframe slot="before" class="slides" src={slidesEmbed} title={`Slides : ${t.title}`} loading="lazy" allowfullscreen></iframe>}
   <Content />
 </EntryLayout>
 
@@ -68,6 +70,7 @@ const video = t.video ? youtubeEmbed(t.video) : undefined;
   .slides {
     width: 100%;
     aspect-ratio: 16 / 10;
+    display: block;
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-md);

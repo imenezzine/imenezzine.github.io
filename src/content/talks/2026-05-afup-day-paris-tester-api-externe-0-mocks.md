@@ -7,6 +7,7 @@ date: 2026-05-22
 location: Paris (ESGI)
 lang: fr
 format: conférence
+slides: https://slides.com/imenezzine/deck
 tags: [tests, php-vcr, php, api]
 ---
 

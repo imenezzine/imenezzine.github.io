@@ -7,6 +7,7 @@ date: 2024-09-20
 location: Lille
 lang: fr
 format: conférence
+slides: https://slides.com/imenezzine/apiplatform
 video: https://www.youtube.com/watch?v=gL3YZC2nNw4
 tags: [tests, php-vcr, api-platform, api]
 ---
