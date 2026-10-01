@@ -63,7 +63,11 @@ Le numéro est lu dans le titre (« #17 ») ; sinon c'est le suivant. Les invit�
 
 ## Mise en ligne
 
-Le site est 100 % statique : déploie `dist/` sur Netlify, Vercel, Cloudflare Pages ou GitHub Pages.
-Pense à mettre ton domaine dans `SITE.url` (`src/site.config.ts`).
+Le site est publié sur **https://imenezzine.github.io** par GitHub Pages.
+À chaque `git push` sur `main`, le workflow `.github/workflows/deploy.yml` reconstruit et republie le site
+(suivi dans l'onglet « Actions » du dépôt).
+
+Pour utiliser un nom de domaine à toi (ex. `imenezzine.io`) : ajoute-le dans Settings → Pages → Custom domain,
+puis mets-le dans `SITE.url` (`src/site.config.ts`).
 
 L'agenda des talks est calculé au moment du build : relance un build de temps en temps (par exemple un build planifié chaque semaine).

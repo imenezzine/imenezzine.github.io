@@ -1,6 +1,6 @@
 // 👋 Toutes tes infos perso sont ici : modifie ce fichier et tout le site suit.
 export const SITE = {
-  url: 'https://example.com',
+  url: 'https://imenezzine.github.io',
   name: 'Imen Ezzine',
   handle: '@imenezzine',
   role: 'Développeuse PHP & Symfony chez SensioLabs',
