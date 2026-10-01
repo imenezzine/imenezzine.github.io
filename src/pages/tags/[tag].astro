@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHead from '../../components/PageHead.astro';
+import { TYPES, getTags, type TaggedType } from '../../lib/tags';
+import { formatDate } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const tags = await getTags();
+  return tags.map((tag) => ({ params: { tag: tag.slug }, props: { tag } }));
+}
+
+const { tag } = Astro.props;
+const counts = Object.entries(Object.groupBy(tag.items, (i) => i.type)) as [TaggedType, unknown[]][];
+const plural = tag.items.length > 1 ? 's' : '';
+---
+
+<BaseLayout title={`#${tag.name}`} description={`Tout le contenu sur ${tag.name}.`} accent="violet">
+  <div class="container-narrow">
+    <PageHead kicker="🏷️ Tag" title={`#${tag.name}`} description={`${tag.items.length} contenu${plural} sur ce sujet.`}>
+      <ul class="summary">
+        {counts.map(([type, items]) => (
+          <li class={`badge badge-color c-${TYPES[type].color}`}>{TYPES[type].emoji} {items.length} {TYPES[type].label}{items.length > 1 ? 's' : ''}</li>
+        ))}
+      </ul>
+    </PageHead>
+
+    <ul class="items">
+      {
+        tag.items.map((item) => (
+          <li>
+            <a class={`card item c-${TYPES[item.type].color}`} href={item.href}>
+              <span class="meta">
+                <span class="type">{TYPES[item.type].emoji} {TYPES[item.type].label}</span>
+                <time datetime={item.date.toISOString()}>{formatDate(item.date)}</time>
+              </span>
+              <h3>{item.title}</h3>
+              {item.description && <p class="muted">{item.description}</p>}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="all"><a href="/tags">← Tous les tags</a></p>
+  </div>
+</BaseLayout>
+
+<style>
+  .summary {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .items {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .item {
+    border-left: 8px solid var(--accent);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .type {
+    font-weight: 700;
+    color: var(--text);
+  }
+  h3 {
+    margin: 0.3rem 0 0.2rem;
+  }
+  p {
+    margin: 0;
+  }
+  .all {
+    margin-top: 2.5rem;
+  }
+</style>

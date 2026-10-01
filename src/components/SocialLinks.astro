@@ -1,0 +1,52 @@
+---
+import { SOCIALS } from '../site.config';
+
+const labels: Record<string, string> = {
+  github: 'GitHub',
+  linkedin: 'LinkedIn',
+  bluesky: 'Bluesky',
+  mastodon: 'Mastodon',
+  youtube: 'YouTube',
+  x: 'X',
+};
+const links = Object.entries(SOCIALS).filter(([, url]) => url);
+---
+
+<ul class="socials">
+  {
+    links.map(([key, url]) => (
+      <li>
+        <a href={url} rel="me noopener" target="_blank">
+          {labels[key] ?? key}
+        </a>
+      </li>
+    ))
+  }
+  <li><a href="/rss.xml">RSS</a></li>
+</ul>
+
+<style>
+  .socials {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+  }
+  a {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 0.35em 0.95em;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--tint);
+  }
+</style>

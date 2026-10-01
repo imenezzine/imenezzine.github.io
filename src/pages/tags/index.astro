@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHead from '../../components/PageHead.astro';
+import { getTags } from '../../lib/tags';
+
+const tags = await getTags();
+const max = Math.max(1, ...tags.map((t) => t.items.length));
+const colors = ['pink', 'violet', 'orange', 'teal', 'yellow', 'blue'];
+---
+
+<BaseLayout title="Tags" description="Tous les sujets dont je parle : articles, talks, épisodes, idées et notes." accent="violet">
+  <div class="container">
+    <PageHead kicker="🏷️ Tags" title="Tous les sujets" description={`${tags.length} sujets, tous types de contenu confondus. Plus un tag est gros, plus j'en parle !`} />
+    <ul class="cloud">
+      {
+        tags.map((tag, i) => (
+          <li>
+            <a
+              class={`tag c-${colors[i % colors.length]}`}
+              href={`/tags/${tag.slug}`}
+              style={`--size: ${(0.95 + (tag.items.length / max) * 0.9).toFixed(2)}rem`}
+            >
+              #{tag.name}
+              <span class="count">{tag.items.length}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .cloud {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--size);
+    padding: 0.3em 0.5em 0.3em 0.85em;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    transition: transform 0.12s ease;
+  }
+  .tag:hover {
+    color: var(--accent);
+    background: var(--tint);
+    border-color: transparent;
+    transform: translateY(-2px);
+  }
+  .count {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    min-width: 1.8em;
+    text-align: center;
+    padding: 0.1em 0.45em;
+    border-radius: 999px;
+    background: var(--tint);
+    color: var(--accent);
+  }
+  .tag:hover .count {
+    background: var(--surface);
+  }
+</style>

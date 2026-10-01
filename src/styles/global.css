@@ -1,0 +1,410 @@
+/*
+ * Palette « doux et chaleureux »
+ * Chaque section a deux couleurs : --accent (texte, icônes, liens)
+ * et --tint (fond pastel). Elles changent via les classes .c-*.
+ */
+:root {
+  /* Couleurs de section : encre + pastel */
+  --rose: #b24d6b;
+  --rose-tint: #f8e4e9;
+  --peach: #b05a2c;
+  --peach-tint: #fbe8da;
+  --sage: #3f7556;
+  --sage-tint: #e1efe5;
+  --lavender: #6450a8;
+  --lavender-tint: #ebe6f7;
+  --honey: #8a6516;
+  --honey-tint: #f8eed3;
+  --sky: #2f6a93;
+  --sky-tint: #e0edf6;
+
+  --primary: var(--rose);
+  --on-primary: #ffffff;
+
+  --bg: #fbf8f5;
+  --bg-alt: #f5eee9;
+  --surface: #ffffff;
+  --text: #2d2429;
+  --muted: #6d6268;
+  --border: #ebe2dc;
+  --border-strong: #d9ccc4;
+
+  --shadow-sm: 0 1px 2px rgb(74 45 55 / 0.06), 0 2px 6px rgb(74 45 55 / 0.05);
+  --shadow-md: 0 2px 4px rgb(74 45 55 / 0.05), 0 10px 24px -6px rgb(74 45 55 / 0.12);
+  --shadow-lg: 0 4px 8px rgb(74 45 55 / 0.05), 0 22px 44px -12px rgb(74 45 55 / 0.2);
+
+  --radius: 20px;
+  --radius-sm: 12px;
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --rose: #f09bb3;
+    --rose-tint: #3a2530;
+    --peach: #f2aa7e;
+    --peach-tint: #3a2a20;
+    --sage: #8fcfa6;
+    --sage-tint: #1f3228;
+    --lavender: #b9a8f0;
+    --lavender-tint: #2b2640;
+    --honey: #e8c46c;
+    --honey-tint: #352c17;
+    --sky: #8cc2e8;
+    --sky-tint: #1d2d3a;
+    --on-primary: #2a171e;
+    --bg: #1a1618;
+    --bg-alt: #221c1f;
+    --surface: #262023;
+    --text: #f4edef;
+    --muted: #b3a6ac;
+    --border: #372e32;
+    --border-strong: #4a3f44;
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+    --shadow-md: 0 2px 4px rgb(0 0 0 / 0.25), 0 10px 24px -6px rgb(0 0 0 / 0.45);
+    --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.25), 0 22px 44px -12px rgb(0 0 0 / 0.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --rose: #f09bb3;
+  --rose-tint: #3a2530;
+  --peach: #f2aa7e;
+  --peach-tint: #3a2a20;
+  --sage: #8fcfa6;
+  --sage-tint: #1f3228;
+  --lavender: #b9a8f0;
+  --lavender-tint: #2b2640;
+  --honey: #e8c46c;
+  --honey-tint: #352c17;
+  --sky: #8cc2e8;
+  --sky-tint: #1d2d3a;
+  --on-primary: #2a171e;
+  --bg: #1a1618;
+  --bg-alt: #221c1f;
+  --surface: #262023;
+  --text: #f4edef;
+  --muted: #b3a6ac;
+  --border: #372e32;
+  --border-strong: #4a3f44;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow-md: 0 2px 4px rgb(0 0 0 / 0.25), 0 10px 24px -6px rgb(0 0 0 / 0.45);
+  --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.25), 0 22px 44px -12px rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}
+
+/* Couleur de section. Les noms (pink, violet…) sont ceux utilisés dans site.config.ts */
+:root,
+.c-pink { --accent: var(--rose); --tint: var(--rose-tint); }
+.c-orange { --accent: var(--peach); --tint: var(--peach-tint); }
+.c-teal { --accent: var(--sage); --tint: var(--sage-tint); }
+.c-violet { --accent: var(--lavender); --tint: var(--lavender-tint); }
+.c-yellow { --accent: var(--honey); --tint: var(--honey-tint); }
+.c-blue { --accent: var(--sky); --tint: var(--sky-tint); }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5em;
+}
+h1 {
+  font-size: clamp(2.1rem, 4.5vw, 3.2rem);
+  font-weight: 700;
+}
+h2 {
+  font-size: clamp(1.5rem, 2.6vw, 1.9rem);
+  font-weight: 700;
+}
+h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+a:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+::selection {
+  background: var(--rose-tint);
+  color: var(--text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.container {
+  width: min(1100px, 100% - 32px);
+  margin-inline: auto;
+}
+.container-narrow {
+  width: min(740px, 100% - 32px);
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---------- Cartes ---------- */
+.card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1.4rem 1.5rem;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+a.card:hover {
+  color: inherit;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+a.card:hover h3 {
+  color: var(--accent);
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+}
+
+.stack > * + * {
+  margin-top: 1.5rem;
+}
+
+/* ---------- Badges & boutons ---------- */
+.badge {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.2em 0.75em;
+  border-radius: 999px;
+  background: var(--bg-alt);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.badge-color {
+  background: var(--tint);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.98rem;
+  padding: 0.7em 1.35em;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-primary);
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+.btn:hover {
+  color: var(--on-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.btn-ghost {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.btn-ghost:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.btn-soft {
+  background: var(--tint);
+  color: var(--accent);
+  box-shadow: none;
+}
+.btn-soft:hover {
+  color: var(--accent);
+}
+
+/* ---------- En-tête de page ---------- */
+.page-head {
+  padding-block: clamp(2.5rem, 6vw, 4rem) 1.75rem;
+}
+.page-head .kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: var(--tint);
+  color: var(--accent);
+  padding: 0.3em 0.9em;
+  border-radius: 999px;
+  margin-bottom: 1.1rem;
+}
+.page-head p {
+  font-size: 1.15rem;
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+}
+.section-title h2 {
+  margin: 0;
+}
+.section-title > a {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--accent);
+  text-decoration: none;
+}
+.section-title > a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Contenu Markdown ---------- */
+.prose {
+  font-size: 1.1rem;
+}
+.prose h2,
+.prose h3 {
+  margin-top: 2em;
+}
+.prose p,
+.prose ul,
+.prose ol {
+  margin-block: 1em;
+}
+.prose a {
+  color: var(--accent);
+}
+.prose blockquote {
+  margin: 1.5em 0;
+  padding: 0.9em 1.3em;
+  border-left: 4px solid var(--accent);
+  background: var(--tint);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  padding: 0.1em 0.35em;
+  border-radius: 6px;
+}
+.prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  padding: 1.2rem 1.35rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  overflow-x: auto;
+}
+.prose img {
+  border-radius: var(--radius-sm);
+}
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2.5em 0;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+}
+.prose th,
+.prose td {
+  border: 1px solid var(--border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

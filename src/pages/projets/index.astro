@@ -1,0 +1,89 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHead from '../../components/PageHead.astro';
+
+const projects = await Promise.all(
+  (await getCollection('projects'))
+    .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.data.order - b.data.order)
+    .map(async (p) => ({ ...p, Content: (await render(p)).Content })),
+);
+const statusEmoji = { actif: '🟢', 'en pause': '🟡', archivé: '⚪' } as const;
+---
+
+<BaseLayout title="Projets" description="Les projets que je construis : open source, side projects et expériences." accent="teal">
+  <div class="container" data-pagefind-body data-pagefind-filter="type:Projet">
+    <PageHead kicker="🛠️ Projets" title="Ce que je construis" description="Open source, side projects et expériences en tout genre." />
+    <div class="grid">
+      {
+        projects.map(({ data, Content }) => (
+          <article class={`card project ${data.featured ? 'featured' : ''}`}>
+            <div class="head">
+              <h2>{data.title}</h2>
+              <span class="badge">
+                {statusEmoji[data.status]} {data.status}
+              </span>
+            </div>
+            <p class="muted">{data.description}</p>
+            <div class="prose small">
+              <Content />
+            </div>
+            <div class="badges">
+              {data.stack.map((s) => (
+                <span class="badge">{s}</span>
+              ))}
+            </div>
+            <div class="links">
+              {data.url && <a class="btn" href={data.url}>Voir le projet</a>}
+              {data.repo && <a class="btn btn-ghost" href={data.repo}>Code source</a>}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .project {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .featured {
+    background: linear-gradient(180deg, var(--tint), var(--surface) 45%);
+  }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 0.75rem;
+  }
+  h2 {
+    font-size: 1.35rem;
+    margin: 0;
+  }
+  p {
+    margin: 0;
+  }
+  .small {
+    font-size: 0.95rem;
+  }
+  .small :global(p) {
+    margin: 0.5em 0;
+  }
+  .badges,
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .links {
+    margin-top: auto;
+    padding-top: 0.5rem;
+  }
+  .links .btn {
+    font-size: 0.9rem;
+    padding: 0.45em 0.9em;
+  }
+</style>

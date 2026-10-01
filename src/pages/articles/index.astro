@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHead from '../../components/PageHead.astro';
+import PostList from '../../components/PostList.astro';
+import { getSorted, readingTime } from '../../lib/utils';
+
+const articles = await getSorted('articles');
+const byYear = Object.entries(
+  Object.groupBy(articles, (a) => String(a.data.date.getFullYear())),
+).sort(([a], [b]) => Number(b) - Number(a));
+---
+
+<BaseLayout title="Articles" description="Tous mes articles : tutos, retours d’expérience et réflexions." accent="pink">
+  <div class="container-narrow">
+    <PageHead kicker="✍️ Articles" title="Ce que j'écris" description="Tutos, retours d’expérience et réflexions sur le dev, PHP, Symfony et la communauté." />
+    {articles.length === 0 && <p class="muted">Premier article en préparation…</p>}
+    {
+      byYear.map(([year, items]) => (
+        <section class="year">
+          <h2>{year}</h2>
+          <PostList
+            items={(items ?? []).map((a) => ({
+              href: `/articles/${a.id}`,
+              title: a.data.title,
+              description: a.data.description,
+              date: a.data.date,
+              meta: readingTime(a.body),
+            }))}
+          />
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .year + .year {
+    margin-top: 3rem;
+  }
+</style>

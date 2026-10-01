@@ -1,0 +1,76 @@
+---
+import { render } from 'astro:content';
+import EntryLayout from '../../layouts/EntryLayout.astro';
+import { getSorted, youtubeEmbed } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const talks = await getSorted('talks');
+  return talks.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const t = entry.data;
+const isPdf = t.slides?.endsWith('.pdf');
+const video = t.video ? youtubeEmbed(t.video) : undefined;
+---
+
+<EntryLayout
+  kind="Talk"
+  title={t.title}
+  description={t.description}
+  date={t.date}
+  kicker={t.format === 'lightning talk' ? '⚡ Lightning talk' : t.format === 'meetup' ? '👥 Meetup' : '🎤 Conférence'}
+  backHref="/talks"
+  backLabel="Tous les talks"
+  accent="violet"
+  meta={[t.event, t.location, t.lang === 'en' ? 'en anglais' : 'en français', ...(t.cospeakers.length ? [`avec ${t.cospeakers.join(', ')}`] : [])]}
+  tags={t.tags}
+>
+  <div slot="before" class="links">
+    {t.slides && <a class="btn" href={t.slides}>📑 Voir les slides</a>}
+    {t.video && <a class="btn btn-ghost" href={t.video}>▶ Voir la vidéo</a>}
+    {t.eventUrl && <a class="btn btn-ghost" href={t.eventUrl}>🌐 Site de l'événement</a>}
+  </div>
+  {
+    video && (
+      <iframe
+        slot="before"
+        class="video"
+        src={video}
+        title={`Vidéo : ${t.title}`}
+        loading="lazy"
+        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      />
+    )
+  }
+  {isPdf && <iframe slot="before" class="slides" src={t.slides} title={`Slides : ${t.title}`} loading="lazy"></iframe>}
+  <Content />
+</EntryLayout>
+
+<style>
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 1rem 0 2rem;
+  }
+  .video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+  }
+  .slides {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+  }
+</style>

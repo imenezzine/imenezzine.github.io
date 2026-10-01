@@ -1,0 +1,134 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHead from '../../components/PageHead.astro';
+import { formatDate, getSorted, splitTalks } from '../../lib/utils';
+
+const { upcoming, past } = splitTalks(await getSorted('talks'));
+---
+
+<BaseLayout title="Talks" description="Mes conférences, avec les slides et les vidéos." accent="violet">
+  <div class="container">
+    <PageHead kicker="🎤 Talks" title="Sur scène" description="Mes conférences et meetups, avec les slides et les vidéos quand elles existent. Tu organises un événement ? Écris-moi !" />
+
+    <section class="block">
+      <h2>📅 Agenda</h2>
+      {
+        upcoming.length === 0 ? (
+          <p class="muted">Aucune date prévue pour le moment.</p>
+        ) : (
+          <ul class="agenda">
+            {upcoming.map((t) => (
+              <li>
+                <a class="card row" href={`/talks/${t.id}`}>
+                  <span class="date">
+                    <strong>{formatDate(t.data.date, { day: '2-digit' })}</strong>
+                    {formatDate(t.data.date, { month: 'short', year: 'numeric' })}
+                  </span>
+                  <span class="info">
+                    <strong>{t.data.title}</strong>
+                    <span class="muted">{t.data.event} · {t.data.location}</span>
+                  </span>
+                  <span class="badge">{t.data.lang.toUpperCase()}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </section>
+
+    <section class="block">
+      <h2>🗂️ Talks passés</h2>
+      <div class="grid">
+        {
+          past.map((t) => (
+            <article class="card talk">
+              <p class="meta">
+                {t.data.format !== 'conférence' && <span class="badge badge-color">{t.data.format}</span>}
+                {formatDate(t.data.date, { dateStyle: 'medium' })} · {t.data.event} · {t.data.location}
+              </p>
+              <h3><a href={`/talks/${t.id}`}>{t.data.title}</a></h3>
+              <p class="muted">{t.data.description}</p>
+              {t.data.cospeakers.length > 0 && <p class="with">Avec {t.data.cospeakers.join(', ')}</p>}
+              <div class="links">
+                {t.data.slides && <a class="btn" href={t.data.slides}>📑 Slides</a>}
+                {t.data.video && <a class="btn btn-ghost" href={t.data.video}>▶ Vidéo</a>}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .block {
+    margin-top: 2.5rem;
+  }
+  .agenda {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .info {
+    display: grid;
+    flex: 1;
+  }
+  .date {
+    display: grid;
+    place-items: center;
+    min-width: 76px;
+    padding: 0.4rem;
+    background: var(--tint);
+    color: var(--accent);
+    font-weight: 600;
+    border-radius: 14px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+  .date strong {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+  }
+  .talk {
+    display: flex;
+    flex-direction: column;
+  }
+  .talk h3 {
+    margin: 0.3rem 0;
+  }
+  .talk h3 a {
+    text-decoration: none;
+  }
+  .with {
+    font-size: 0.9rem;
+    margin: 0.4rem 0 0;
+  }
+  .meta .badge {
+    margin-right: 0.4rem;
+  }
+  .meta {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin: 0;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 0.75rem;
+  }
+  .links .btn {
+    font-size: 0.9rem;
+    padding: 0.45em 0.9em;
+  }
+</style>

@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHead from '../../components/PageHead.astro';
+import { PODCAST } from '../../site.config';
+import { formatDate, getSorted } from '../../lib/utils';
+
+const episodes = await getSorted('podcast');
+const platformLabels: Record<string, string> = {
+  spotify: 'Spotify',
+  apple: 'Apple Podcasts',
+  deezer: 'Deezer',
+  youtube: 'YouTube',
+};
+const platforms = Object.entries(PODCAST.platforms).filter(([, url]) => url);
+---
+
+<BaseLayout title={PODCAST.name} description={PODCAST.description} accent="orange">
+  <div class="container">
+    <section class="podcast-hero">
+      <img src={PODCAST.cover} alt={`Pochette de ${PODCAST.name}`} width="220" height="220" />
+      <div>
+        <PageHead kicker="🎧 Podcast" title={PODCAST.name} description={PODCAST.description} />
+        <div class="platforms">
+          {platforms.map(([key, url]) => <a class="btn btn-ghost" href={url}>{platformLabels[key]}</a>)}
+          <a class="btn" href="/podcast/rss.xml">RSS du podcast</a>
+        </div>
+      </div>
+    </section>
+
+    <h2 class="list-title">Tous les épisodes</h2>
+    <ol class="episodes" reversed>
+      {
+        episodes.map((ep) => (
+          <li>
+            <a class="card episode" href={`/podcast/${ep.id}`}>
+              <span class="num">#{ep.data.number}</span>
+              <span class="body">
+                <span class="meta">
+                  {formatDate(ep.data.date)}
+                  {ep.data.duration && ` · ${ep.data.duration}`}
+                  {ep.data.guests.length > 0 && ` · avec ${ep.data.guests.join(', ')}`}
+                </span>
+                <strong class="title">{ep.data.title}</strong>
+                <span class="muted">{ep.data.description}</span>
+              </span>
+              <span class="play" aria-hidden="true">▶</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</BaseLayout>
+
+<style>
+  .podcast-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 2.5rem;
+  }
+  .podcast-hero > div {
+    flex: 1 1 320px;
+  }
+  .podcast-hero img {
+    width: 220px;
+    border-radius: 50%;
+    box-shadow: var(--shadow-lg);
+    margin-top: 2rem;
+  }
+  .platforms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .list-title {
+    margin-top: 3rem;
+  }
+  .episodes {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 1.1rem;
+  }
+  .episode {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.6rem;
+    min-width: 64px;
+    text-align: center;
+    background: var(--tint);
+    color: var(--accent);
+    border-radius: 16px;
+    padding: 0.3rem;
+  }
+  .body {
+    display: grid;
+    flex: 1;
+    gap: 0.15rem;
+  }
+  .title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+  }
+  .meta {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .play {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--tint);
+    color: var(--accent);
+  }
+  a.episode:hover .play {
+    background: var(--accent);
+    color: var(--on-primary);
+  }
+  @media (max-width: 560px) {
+    .play {
+      display: none;
+    }
+    .num {
+      min-width: 52px;
+      font-size: 1.2rem;
+    }
+  }
+</style>

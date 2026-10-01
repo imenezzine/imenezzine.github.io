@@ -1,0 +1,285 @@
+---
+import { NAV, NAV_MORE, SITE } from '../site.config';
+import ThemeToggle from './ThemeToggle.astro';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+const initials = SITE.name
+  .split(' ')
+  .map((w) => w[0])
+  .join('')
+  .slice(0, 2);
+const moreActive = NAV_MORE.some((item) => isActive(item.href));
+---
+
+<header class="site-header">
+  <div class="container bar">
+    <a class="logo" href="/" aria-label="Accueil">
+      <span class="logo-dot" aria-hidden="true">{initials}</span>
+      <span class="logo-name">{SITE.name}</span>
+    </a>
+
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">
+      <span aria-hidden="true">☰</span> Menu
+    </button>
+    <nav id="main-nav" aria-label="Navigation principale">
+      <ul class="main-list">
+        {
+          NAV.map((item) => (
+            <li class={`c-${item.color}`}>
+              <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+        <li class="more">
+          <button class:list={['more-toggle', { active: moreActive }]} type="button" aria-expanded="false" aria-controls="more-list">
+            Plus <span aria-hidden="true">▾</span>
+          </button>
+          <ul id="more-list" class="more-list">
+            {
+              NAV_MORE.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <a class="icon-btn" href="/recherche" aria-label="Rechercher" title="Rechercher (raccourci : /)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+        <circle cx="10.5" cy="10.5" r="6.5"></circle>
+        <path d="m15.5 15.5 5 5"></path>
+      </svg>
+    </a>
+    <ThemeToggle />
+  </div>
+</header>
+
+<script>
+  // Raccourci « / » : ouvre la recherche (sauf si on est déjà en train d'écrire).
+  document.addEventListener('keydown', (e) => {
+    const el = e.target as HTMLElement;
+    if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)) return;
+    e.preventDefault();
+    if (location.pathname.startsWith('/recherche')) {
+      document.querySelector<HTMLInputElement>('.pagefind-ui__search-input')?.focus();
+    } else {
+      location.href = '/recherche';
+    }
+  });
+
+  // Boutons qui ouvrent / ferment un panneau (menu mobile et sous-menu « Plus »).
+  const toggles = [...document.querySelectorAll<HTMLButtonElement>('.menu-toggle, .more-toggle')];
+  const setOpen = (btn: HTMLButtonElement, open: boolean) => {
+    btn.setAttribute('aria-expanded', String(open));
+    document.getElementById(btn.getAttribute('aria-controls')!)?.classList.toggle('open', open);
+  };
+  toggles.forEach((btn) =>
+    btn.addEventListener('click', () => setOpen(btn, btn.getAttribute('aria-expanded') !== 'true')),
+  );
+  // Clic en dehors ou Échap : on referme tout.
+  document.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('.site-header')) toggles.forEach((btn) => setOpen(btn, false));
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') toggles.forEach((btn) => setOpen(btn, false));
+  });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: saturate(1.4) blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 68px;
+    position: relative;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-decoration: none;
+    white-space: nowrap;
+    margin-right: auto;
+    min-width: 0;
+  }
+  .logo:hover {
+    color: inherit;
+  }
+  .logo-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .logo-dot {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--rose), var(--peach));
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: transform 0.3s ease;
+  }
+  .logo:hover .logo-dot {
+    transform: rotate(-8deg) scale(1.05);
+  }
+
+  .icon-btn {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    color: var(--muted);
+  }
+  .icon-btn:hover {
+    background: var(--bg-alt);
+    color: var(--text);
+  }
+  .menu-toggle,
+  .more-toggle {
+    font: inherit;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .menu-toggle {
+    flex-shrink: 0;
+    padding: 0.4em 1em;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--surface);
+  }
+
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  nav a {
+    display: block;
+    font-weight: 500;
+    font-size: 0.97rem;
+    color: var(--muted);
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 0.4em 0.85em;
+    border-radius: 999px;
+  }
+  nav a:hover {
+    color: var(--text);
+    background: var(--bg-alt);
+  }
+  nav a[aria-current='page'],
+  .more-toggle.active {
+    color: var(--accent);
+    background: var(--tint);
+  }
+
+  /* Mobile : un seul panneau, tous les liens à plat */
+  @media (max-width: 959px) {
+    nav {
+      display: none;
+    }
+    nav.open {
+      display: block;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 16px;
+      left: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 0.75rem;
+    }
+    .main-list,
+    .more-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.25rem;
+    }
+    .more {
+      grid-column: 1 / -1;
+      border-top: 1px solid var(--border);
+      margin-top: 0.4rem;
+      padding-top: 0.4rem;
+    }
+    .more-toggle {
+      display: none;
+    }
+  }
+
+  /* Desktop : barre horizontale + sous-menu « Plus » */
+  @media (min-width: 960px) {
+    .menu-toggle {
+      display: none;
+    }
+    nav {
+      margin-right: 0.5rem;
+    }
+    .main-list {
+      display: flex;
+      align-items: center;
+      gap: 0.15rem;
+    }
+    .more {
+      position: relative;
+    }
+    .more-toggle {
+      color: var(--muted);
+      padding: 0.4em 0.85em;
+      border: 0;
+      border-radius: 999px;
+      background: none;
+    }
+    .more-toggle:hover,
+    .more-toggle[aria-expanded='true'] {
+      color: var(--text);
+      background: var(--bg-alt);
+    }
+    .more-list {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 200px;
+      padding: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg);
+    }
+    .more-list.open {
+      display: grid;
+      gap: 0.1rem;
+    }
+    .more-list a {
+      border-radius: 8px;
+    }
+  }
+</style>

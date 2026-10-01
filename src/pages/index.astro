@@ -1,0 +1,456 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Newsletter from '../components/Newsletter.astro';
+import SocialLinks from '../components/SocialLinks.astro';
+import PostList from '../components/PostList.astro';
+import { SITE, PODCAST } from '../site.config';
+import { formatDate, getSorted, readingTime, splitTalks } from '../lib/utils';
+
+const articles = (await getSorted('articles')).slice(0, 3);
+const [latestEpisode] = await getSorted('podcast');
+const { upcoming } = splitTalks(await getSorted('talks'));
+const projects = (await getCollection('projects'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+const til = (await getSorted('til')).slice(0, 4);
+
+const tiles = [
+  { href: '/articles', label: 'Articles', emoji: '✍️', color: 'pink', text: 'Tutos, retours d’expérience et réflexions.' },
+  { href: '/talks', label: 'Talks', emoji: '🎤', color: 'violet', text: 'Mes conférences, slides et vidéos.' },
+  { href: '/podcast', label: 'Podcast', emoji: '🎧', color: 'orange', text: `Tous les épisodes de ${PODCAST.name}.` },
+  { href: '/projets', label: 'Projets', emoji: '🛠️', color: 'teal', text: 'Ce que je construis, en open source ou pas.' },
+  { href: '/idees', label: 'Idées', emoji: '💡', color: 'yellow', text: 'Mon jardin d’idées, en train de pousser.' },
+  { href: '/retours', label: 'Retours d’écoute', emoji: '📝', color: 'blue', text: 'Mes notes sur les épisodes que j’écoute.' },
+];
+---
+
+<BaseLayout>
+  <section class="hero container">
+    <div class="hero-text">
+      <p class="hello">👋 Bonjour, je suis</p>
+      <h1>{SITE.name}</h1>
+      <p class="role">{SITE.role}</p>
+      <p class="tagline">{SITE.tagline}</p>
+      <div class="cta">
+        <a class="btn" href="/articles">Lire mes articles</a>
+        <a class="btn btn-ghost" href="/podcast">🎧 Écouter le podcast</a>
+      </div>
+      <SocialLinks />
+    </div>
+
+    <div class="hero-art">
+      <div class="photo">
+        <img src={SITE.avatar} alt={`Photo de ${SITE.name}`} width="360" height="360" />
+      </div>
+      {
+        latestEpisode && (
+          <a class="floating c-orange" href={`/podcast/${latestEpisode.id}`}>
+            <span class="floating-icon" aria-hidden="true">🎧</span>
+            <span>
+              <small>Dernier épisode · #{latestEpisode.data.number}</small>
+              <strong>{PODCAST.name}</strong>
+            </span>
+          </a>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="container section">
+    <div class="tiles">
+      {
+        tiles.map((t) => (
+          <a class={`card tile c-${t.color}`} href={t.href}>
+            <span class="tile-icon" aria-hidden="true">{t.emoji}</span>
+            <span>
+              <h3>{t.label}</h3>
+              <p class="muted">{t.text}</p>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <div class="container home-grid">
+    <section class="c-pink">
+      <div class="section-title">
+        <h2>Derniers articles</h2>
+        <a href="/articles">Tout voir →</a>
+      </div>
+      <PostList
+        items={articles.map((a) => ({
+          href: `/articles/${a.id}`,
+          title: a.data.title,
+          description: a.data.description,
+          date: a.data.date,
+          meta: readingTime(a.body),
+        }))}
+      />
+    </section>
+
+    <aside class="side">
+      {
+        latestEpisode && (
+          <section class="c-orange">
+            <div class="section-title">
+              <h2>Podcast</h2>
+              <a href="/podcast">Épisodes →</a>
+            </div>
+            <a class="card episode" href={`/podcast/${latestEpisode.id}`}>
+              <span class="badge badge-color">Épisode #{latestEpisode.data.number}</span>
+              <h3>{latestEpisode.data.title}</h3>
+              <p class="muted">{latestEpisode.data.description}</p>
+              <span class="play">
+                <span class="play-icon" aria-hidden="true">▶</span> Écouter
+              </span>
+            </a>
+          </section>
+        )
+      }
+
+      <section class="c-violet">
+        <div class="section-title">
+          <h2>Prochains talks</h2>
+          <a href="/talks">Agenda →</a>
+        </div>
+        {
+          upcoming.length === 0 ? (
+            <p class="muted">
+              Pas de talk prévu pour l'instant. <a href="/talks">Voir les précédents →</a>
+            </p>
+          ) : (
+            <ul class="agenda">
+              {upcoming.slice(0, 3).map((t) => (
+                <li>
+                  <a class="card" href={`/talks/${t.id}`}>
+                    <span class="date">
+                      <strong>{formatDate(t.data.date, { day: '2-digit' })}</strong>
+                      {formatDate(t.data.date, { month: 'short' })}
+                    </span>
+                    <span>
+                      <strong>{t.data.event}</strong>
+                      <br />
+                      <span class="muted">{t.data.title}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </section>
+    </aside>
+  </div>
+
+  {
+    projects.length > 0 && (
+      <section class="container section c-teal">
+        <div class="section-title">
+          <h2>Projets à la une</h2>
+          <a href="/projets">Tous les projets →</a>
+        </div>
+        <div class="grid">
+          {projects.map((p) => (
+            <a class="card" href={p.data.url ?? p.data.repo ?? '/projets'}>
+              <h3>{p.data.title}</h3>
+              <p class="muted">{p.data.description}</p>
+              <div class="stack-badges">
+                {p.data.stack.map((s) => (
+                  <span class="badge">{s}</span>
+                ))}
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    til.length > 0 && (
+      <section class="container section til-section c-blue">
+        <div class="section-title">
+          <h2>Today I Learned</h2>
+          <a href="/til">Toutes les notes →</a>
+        </div>
+        <ul class="til">
+          {til.map((t) => (
+            <li>
+              <a href={`/til/${t.id}`}>{t.data.title}</a>
+              <span class="muted">{formatDate(t.data.date, { dateStyle: 'medium' })}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <div class="container">
+    <Newsletter />
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    align-items: center;
+    gap: 3rem;
+    padding-block: clamp(3rem, 8vw, 6rem) 1rem;
+  }
+  .hello {
+    display: inline-block;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--tint);
+    padding: 0.3em 0.95em;
+    border-radius: 999px;
+    margin: 0 0 1.1rem;
+  }
+  h1 {
+    font-size: clamp(2.8rem, 7vw, 4.6rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    margin-bottom: 0.15em;
+  }
+  .role {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.15rem, 2.2vw, 1.4rem);
+    color: var(--accent);
+    margin: 0 0 1rem;
+  }
+  .tagline {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 50ch;
+    margin: 0;
+  }
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 2rem 0 1.75rem;
+  }
+
+  .hero-art {
+    position: relative;
+    justify-self: center;
+    width: min(100%, 380px);
+    padding: 0 0 1.5rem 1.5rem;
+  }
+  .hero-art::before {
+    content: '';
+    position: absolute;
+    inset: 0.5rem -0.5rem 0.5rem 1rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--rose-tint), var(--peach-tint) 60%, var(--lavender-tint));
+  }
+  .photo {
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    aspect-ratio: 1;
+    background: var(--bg-alt);
+    border: 6px solid var(--surface);
+  }
+  .photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .floating {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 1.1rem 0.7rem 0.7rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    text-decoration: none;
+    line-height: 1.3;
+    transition: transform 0.2s ease;
+  }
+  .floating:hover {
+    color: inherit;
+    transform: translateY(-2px);
+  }
+  .floating small {
+    display: block;
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+  .floating strong {
+    font-family: var(--font-display);
+  }
+  .floating-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--tint);
+    font-size: 1.2rem;
+  }
+
+  .tiles {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  }
+  .tile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+  }
+  .tile-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: var(--tint);
+    font-size: 1.5rem;
+  }
+  .tile h3 {
+    margin: 0 0 0.1rem;
+    font-size: 1.1rem;
+  }
+  .tile p {
+    margin: 0;
+    font-size: 0.93rem;
+    line-height: 1.5;
+  }
+
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 3rem;
+  }
+  .side {
+    display: grid;
+    gap: 2.5rem;
+    align-content: start;
+  }
+  .episode {
+    background: var(--tint);
+    border-color: transparent;
+    box-shadow: none;
+  }
+  .episode .badge-color {
+    background: var(--surface);
+  }
+  .episode h3 {
+    margin: 0.8rem 0 0.35rem;
+  }
+  .episode p {
+    margin: 0 0 1rem;
+  }
+  .play {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .play-icon {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--on-primary);
+    font-size: 0.75rem;
+  }
+  .agenda {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.9rem;
+  }
+  .agenda .card {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.85rem 1rem;
+  }
+  .date {
+    display: grid;
+    place-items: center;
+    min-width: 56px;
+    padding: 0.35rem;
+    background: var(--tint);
+    color: var(--accent);
+    border-radius: 14px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+  .date strong {
+    font-size: 1.35rem;
+    font-family: var(--font-display);
+  }
+  .stack-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .til {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .til li {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    padding: 0.95rem 1.4rem;
+  }
+  .til li + li {
+    border-top: 1px solid var(--border);
+  }
+  .til a {
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .til a::before {
+    content: '⚡';
+    margin-right: 0.6rem;
+  }
+  .til .muted {
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 860px) {
+    .hero,
+    .home-grid {
+      grid-template-columns: 1fr;
+    }
+    .hero-art {
+      order: -1;
+      width: min(100%, 300px);
+      justify-self: start;
+    }
+  }
+</style>

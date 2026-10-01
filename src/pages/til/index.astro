@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHead from '../../components/PageHead.astro';
+import PostList from '../../components/PostList.astro';
+import { getSorted } from '../../lib/utils';
+
+const notes = await getSorted('til');
+---
+
+<BaseLayout title="Today I Learned" description="Des notes courtes sur ce que j’apprends au quotidien." accent="blue">
+  <div class="container-narrow">
+    <PageHead kicker="⚡ TIL" title="Today I Learned" description="Des notes courtes, écrites vite, sur les petites découvertes du quotidien. Pas besoin d’un article complet pour partager un truc utile !" />
+    <PostList
+      items={notes.map((n) => ({
+        href: `/til/${n.id}`,
+        title: n.data.title,
+        date: n.data.date,
+        meta: n.data.tags.map((t) => `#${t}`).join(' '),
+      }))}
+    />
+  </div>
+</BaseLayout>

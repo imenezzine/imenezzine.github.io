@@ -1,0 +1,33 @@
+{
+  "name": "siteperso",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && pagefind --site dist",
+    "preview": "astro preview",
+    "astro": "astro",
+    "import:medium": "node scripts/import-medium.mjs",
+    "import:youtube": "node scripts/import-youtube.mjs"
+  },
+  "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.2",
+    "@astrojs/mdx": "^8.0.2",
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.5"
+  },
+  "allowScripts": {
+    "esbuild": true
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "fast-xml-parser": "^5.11.2",
+    "pagefind": "^1.5.2",
+    "turndown": "^7.2.4",
+    "typescript": "^6.0.3"
+  }
+}

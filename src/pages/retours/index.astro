@@ -1,0 +1,99 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHead from '../../components/PageHead.astro';
+import Tags from '../../components/Tags.astro';
+import CommentCard from '../../components/CommentCard.astro';
+import { formatDate, getSorted } from '../../lib/utils';
+import { PODCAST } from '../../site.config';
+
+const retours = await Promise.all(
+  (await getSorted('retours')).map(async (r) => ({
+    entry: r,
+    episode: r.data.episode ? await getEntry(r.data.episode) : undefined,
+  })),
+);
+
+const comments = await Promise.all(
+  (await getCollection('commentaires'))
+    .sort((a, b) => b.data.month.localeCompare(a.data.month))
+    .map(async (comment) => ({ comment, episode: await getEntry(comment.data.episode) })),
+);
+---
+
+<BaseLayout title="Retours d’écoute" description={`Ce que les auditeurs disent de ${PODCAST.name}, et mes notes sur les épisodes que j’écoute.`} accent="blue">
+  <div class="container">
+    <PageHead kicker="📝 Retours" title="Retours d'écoute" description={`Ce que vous dites des épisodes de ${PODCAST.name}, et mes propres notes sur les épisodes que j’écoute.`} />
+
+    {
+      comments.length > 0 && (
+        <section class="block">
+          <div class="section-title c-orange">
+            <h2>💬 Ce que vous en dites</h2>
+            <span class="muted">{comments.length} commentaires laissés sur YouTube</span>
+          </div>
+          <div class="wall">
+            {comments.map(({ comment, episode }) => (
+              <CommentCard comment={comment} episode={episode} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="block">
+      <div class="section-title">
+        <h2>📝 Mes notes d'écoute</h2>
+      </div>
+    <div class="grid">
+      {
+        retours.map(({ entry, episode }) => (
+          <a class="card retour" href={`/retours/${entry.id}`}>
+            <span class={`badge badge-color ${episode ? 'c-orange' : 'c-blue'}`}>
+              {episode ? `${PODCAST.name} #${episode.data.number}` : entry.data.podcast ?? 'Podcast'}
+            </span>
+            <h3>{entry.data.title}</h3>
+            {entry.data.rating && (
+              <p class="stars" aria-label={`Note : ${entry.data.rating} sur 5`}>
+                {'★'.repeat(entry.data.rating)}
+                <span class="muted">{'★'.repeat(5 - entry.data.rating)}</span>
+              </p>
+            )}
+            <p class="date">{formatDate(entry.data.date, { dateStyle: 'medium' })}</p>
+            <Tags tags={entry.data.tags} linked={false} />
+          </a>
+        ))
+      }
+    </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .block + .block {
+    margin-top: 3.5rem;
+  }
+  .wall {
+    columns: 3 300px;
+    column-gap: 1.25rem;
+  }
+  .wall > :global(*) {
+    margin-bottom: 1.25rem;
+  }
+  .retour h3 {
+    margin: 0.75rem 0 0.3rem;
+  }
+  .stars {
+    color: var(--peach);
+    letter-spacing: 0.1em;
+    margin: 0;
+  }
+  .stars .muted {
+    opacity: 0.35;
+  }
+  .date {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin: 0.3rem 0 0;
+  }
+</style>

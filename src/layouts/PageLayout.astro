@@ -1,0 +1,26 @@
+---
+// Layout pour les pages Markdown simples (uses, now, à propos).
+import BaseLayout from './BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
+import { formatDate } from '../lib/utils';
+
+const { frontmatter } = Astro.props;
+const updated = frontmatter.updated ? new Date(frontmatter.updated) : undefined;
+---
+
+<BaseLayout title={frontmatter.title} description={frontmatter.description} accent={frontmatter.accent}>
+  <div class="container-narrow" data-pagefind-body data-pagefind-filter="type:Page">
+    <PageHead kicker={frontmatter.kicker ?? frontmatter.title} title={frontmatter.heading ?? frontmatter.title} description={frontmatter.description}>
+      {updated && <p class="updated">Mis à jour le {formatDate(updated)}</p>}
+    </PageHead>
+    <div class="prose">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .updated {
+    font-size: 0.85rem !important;
+  }
+</style>

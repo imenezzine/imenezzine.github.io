@@ -1,0 +1,50 @@
+---
+import { SITE } from '../site.config';
+import SocialLinks from './SocialLinks.astro';
+---
+
+<footer class="site-footer">
+  <div class="container inner">
+    <div>
+      <p class="name">{SITE.name}</p>
+      <p class="muted">{SITE.role} · {SITE.location}</p>
+    </div>
+    <SocialLinks />
+  </div>
+  <div class="container fine muted">
+    <span>© {new Date().getFullYear()} {SITE.name}</span>
+    <span>Fait avec ❤️ et <a href="https://astro.build">Astro</a></span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 5rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-alt);
+    padding-block: 2.5rem 1.5rem;
+  }
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  p {
+    margin: 0;
+  }
+  .name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+  .fine {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    font-size: 0.85rem;
+  }
+</style>

@@ -1,0 +1,29 @@
+---
+import { render } from 'astro:content';
+import EntryLayout from '../../layouts/EntryLayout.astro';
+import { getSorted } from '../../lib/utils';
+import { IDEA_STATUS as STATUS } from '../../lib/ideas';
+
+export async function getStaticPaths() {
+  const ideas = await getSorted('ideas');
+  return ideas.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const s = STATUS[entry.data.status];
+---
+
+<EntryLayout
+  kind="Idée"
+  title={entry.data.title}
+  description={entry.data.description}
+  date={entry.data.date}
+  kicker={`${s.emoji} Idée · ${s.label}`}
+  backHref="/idees"
+  backLabel="Le jardin d'idées"
+  accent="yellow"
+  tags={entry.data.tags}
+>
+  <Content />
+</EntryLayout>

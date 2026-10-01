@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHead from '../../components/PageHead.astro';
+import Tags from '../../components/Tags.astro';
+import { formatDate, getSorted } from '../../lib/utils';
+import { IDEA_STATUS as STATUS } from '../../lib/ideas';
+
+const ideas = await getSorted('ideas');
+---
+
+<BaseLayout title="Idées" description="Mon jardin d’idées : des pensées en cours, qui grandissent avec le temps." accent="yellow">
+  <div class="container">
+    <PageHead kicker="💡 Idées" title="Mon jardin d'idées" description="Ici, pas d’articles finis : des idées en train de pousser. Je les fais évoluer au fil du temps, de la graine à l’arbre.">
+      <ul class="legend">
+        {Object.values(STATUS).map((s) => <li><span>{s.emoji} <strong>{s.label}</strong></span> <span class="muted">{s.hint}</span></li>)}
+      </ul>
+    </PageHead>
+    <div class="grid">
+      {
+        ideas.map((idea) => {
+          const s = STATUS[idea.data.status];
+          return (
+            <a class="card idea" href={`/idees/${idea.id}`}>
+              <span class="badge badge-color">{s.emoji} {s.label}</span>
+              <h3>{idea.data.title}</h3>
+              <p class="muted">{idea.data.description}</p>
+              <p class="date">Plantée le {formatDate(idea.data.date, { dateStyle: 'medium' })}</p>
+              <Tags tags={idea.data.tags} linked={false} />
+            </a>
+          );
+        })
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .legend {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    font-size: 0.95rem;
+  }
+  .idea h3 {
+    margin: 0.75rem 0 0.3rem;
+  }
+  .idea p {
+    margin: 0;
+  }
+  .date {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.6rem !important;
+  }
+</style>

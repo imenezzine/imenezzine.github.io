@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHead from '../components/PageHead.astro';
+---
+
+<BaseLayout title="Recherche" description="Rechercher dans les articles, talks, épisodes, idées et notes." accent="yellow">
+  <div class="container-narrow">
+    <PageHead kicker="🔎 Recherche" title="Tu cherches quelque chose ?" description="Articles, talks, épisodes, retours, idées, TIL… tout est là.">
+      <p class="hint muted">Astuce : appuie sur <kbd>/</kbd> depuis n'importe quelle page pour arriver ici.</p>
+    </PageHead>
+    <div id="search"></div>
+    <p class="unavailable muted" hidden>
+      L'index de recherche n'existe pas encore : il est généré par <code>npm run build</code>. Pour tester en local, lance
+      <code>npm run build && npm run preview</code>.
+    </p>
+    <p class="tags-link"><a href="/tags">🏷️ Ou parcours les contenus par tag →</a></p>
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  (() => {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = '/pagefind/pagefind-ui.css';
+    document.head.append(css);
+
+    const script = document.createElement('script');
+    script.src = '/pagefind/pagefind-ui.js';
+    script.onload = () => {
+      // eslint-disable-next-line no-undef
+      const ui = new PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        showImages: false,
+        autofocus: true,
+        resetStyles: false,
+        openFilters: ['type'],
+      });
+      const q = new URLSearchParams(location.search).get('q');
+      if (q) ui.triggerSearch(q);
+    };
+    script.onerror = () => {
+      document.querySelector('.unavailable').hidden = false;
+    };
+    document.head.append(script);
+  })();
+</script>
+
+<style>
+  .hint {
+    font-size: 0.95rem !important;
+  }
+  kbd {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    padding: 0.05em 0.45em;
+    border: 1px solid var(--border-strong);
+    border-bottom-width: 3px;
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+  }
+  #search {
+    --pagefind-ui-scale: 1;
+    --pagefind-ui-primary: var(--accent);
+    --pagefind-ui-text: var(--text);
+    --pagefind-ui-background: var(--surface);
+    --pagefind-ui-border: var(--border);
+    --pagefind-ui-tag: var(--bg-alt);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 16px;
+    --pagefind-ui-font: var(--font-body);
+  }
+  #search :global(.pagefind-ui__search-input) {
+    font-family: var(--font-display);
+    box-shadow: var(--shadow-md);
+  }
+  #search :global(.pagefind-ui__result-link) {
+    color: var(--text);
+    font-family: var(--font-display);
+  }
+  #search :global(.pagefind-ui__result-link:hover) {
+    color: var(--accent);
+  }
+  #search :global(mark) {
+    background: var(--honey-tint);
+    color: var(--text);
+    padding: 0 0.15em;
+    border-radius: 3px;
+  }
+  #search :global(.pagefind-ui__result-excerpt),
+  #search :global(.pagefind-ui__message),
+  #search :global(.pagefind-ui__filter-name) {
+    color: var(--muted);
+  }
+  .unavailable code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+  .tags-link {
+    margin-top: 3rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+</style>

@@ -1,0 +1,60 @@
+---
+import { formatDate } from '../lib/utils';
+
+interface Item {
+  href: string;
+  title: string;
+  description?: string;
+  date: Date;
+  meta?: string;
+}
+interface Props {
+  items: Item[];
+  empty?: string;
+}
+const { items, empty = 'Rien ici pour le moment… reviens bientôt !' } = Astro.props;
+---
+
+{
+  items.length === 0 ? (
+    <p class="muted">{empty}</p>
+  ) : (
+    <ul class="post-list">
+      {items.map((item) => (
+        <li>
+          <a class="card" href={item.href}>
+            <div class="meta">
+              <time datetime={item.date.toISOString()}>{formatDate(item.date)}</time>
+              {item.meta && <span>· {item.meta}</span>}
+            </div>
+            <h3>{item.title}</h3>
+            {item.description && <p class="muted">{item.description}</p>}
+          </a>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .meta {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+  h3 {
+    margin: 0.3rem 0 0.25rem;
+  }
+  p {
+    margin: 0;
+  }
+</style>

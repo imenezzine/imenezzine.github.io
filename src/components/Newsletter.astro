@@ -1,0 +1,56 @@
+---
+import { NEWSLETTER } from '../site.config';
+---
+
+{
+  NEWSLETTER.action && (
+    <section class="newsletter c-pink">
+      <div>
+        <h2>📬 La newsletter</h2>
+        <p>{NEWSLETTER.description}</p>
+      </div>
+      <form action={NEWSLETTER.action} method="post" target="_blank">
+        <label class="sr-only" for="nl-email">Adresse e-mail</label>
+        <input id="nl-email" type="email" name="email" required placeholder="toi@exemple.fr" autocomplete="email" />
+        <button class="btn" type="submit">Je m'abonne</button>
+      </form>
+    </section>
+  )
+}
+
+<style>
+  .newsletter {
+    display: grid;
+    gap: 1rem 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    align-items: center;
+    background: linear-gradient(135deg, var(--rose-tint), var(--peach-tint));
+    border-radius: var(--radius);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+  }
+  h2 {
+    margin-bottom: 0.25em;
+  }
+  p {
+    margin: 0;
+    color: var(--muted);
+  }
+  form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  input {
+    flex: 1 1 200px;
+    font: inherit;
+    padding: 0.7em 1.1em;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+  }
+  input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+</style>

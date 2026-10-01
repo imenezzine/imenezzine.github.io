@@ -1,0 +1,111 @@
+---
+import { getCollection, render } from 'astro:content';
+import CommentCard from '../../components/CommentCard.astro';
+import EntryLayout from '../../layouts/EntryLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { getSorted, youtubeEmbed } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const episodes = await getSorted('podcast');
+  return episodes.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const ep = entry.data;
+const retours = (await getCollection('retours', (r) => r.data.episode?.id === entry.id)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+);
+const video = ep.youtube ? youtubeEmbed(ep.youtube) : undefined;
+const comments = await getCollection('commentaires', (c) => c.data.episode.id === entry.id);
+const meta = [ep.duration, ep.guests.length ? `avec ${ep.guests.join(', ')}` : undefined].filter(Boolean) as string[];
+---
+
+<EntryLayout
+  kind="Épisode"
+  title={ep.title}
+  description={ep.description}
+  date={ep.date}
+  kicker={`🎧 Épisode #${ep.number}`}
+  backHref="/podcast"
+  backLabel="Tous les épisodes"
+  accent="orange"
+  meta={meta}
+  tags={ep.tags}
+>
+  {
+    (video || ep.embed || ep.audio) && (
+      <div slot="before" class="player">
+        {video ? (
+          <iframe
+            class="video"
+            src={video}
+            title={`Vidéo : ${ep.title}`}
+            loading="lazy"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          />
+        ) : ep.embed ? (
+          <iframe src={ep.embed} title={`Lecteur : ${ep.title}`} loading="lazy" allow="autoplay; clipboard-write; encrypted-media" />
+        ) : (
+          <audio controls preload="none" src={ep.audio} />
+        )}
+      </div>
+    )
+  }
+  <Content />
+  {
+    comments.length > 0 && (
+      <section slot="after" class="comments">
+        <h2>💬 Ce que les auditeurs en disent</h2>
+        <div class="comment-list">
+          {comments.map((comment) => (
+            <CommentCard comment={comment} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+  {
+    retours.length > 0 && (
+      <section slot="after" class="retours">
+        <h2>📝 Mes retours sur cet épisode</h2>
+        <PostList items={retours.map((r) => ({ href: `/retours/${r.id}`, title: r.data.title, date: r.data.date }))} />
+      </section>
+    )
+  }
+</EntryLayout>
+
+<style>
+  .player {
+    margin: 0.5rem 0 2rem;
+    padding: 1rem;
+    background: var(--tint);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+  audio,
+  iframe {
+    display: block;
+    width: 100%;
+    border: 0;
+  }
+  iframe {
+    height: 180px;
+    border-radius: 10px;
+  }
+  iframe.video {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+  .comments {
+    margin-top: 3rem;
+  }
+  .comment-list {
+    display: grid;
+    gap: 1rem;
+  }
+  .retours {
+    margin-top: 3rem;
+  }
+</style>

@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page introuvable" accent="yellow">
+  <div class="container-narrow lost">
+    <p class="big" aria-hidden="true">404</p>
+    <h1>Oups, cette page s'est perdue 🙈</h1>
+    <p class="muted">Elle a peut-être déménagé, ou n'a jamais existé.</p>
+    <a class="btn" href="/">Retour à l'accueil</a>
+  </div>
+</BaseLayout>
+
+<style>
+  .lost {
+    text-align: center;
+    padding-block: 5rem;
+  }
+  .big {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(6rem, 25vw, 12rem);
+    line-height: 1;
+    margin: 0;
+    background: linear-gradient(135deg, var(--rose), var(--peach));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+</style>

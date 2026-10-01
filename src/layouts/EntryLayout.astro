@@ -1,0 +1,60 @@
+---
+// Layout pour une entrée de contenu (article, idée, TIL, épisode, retour, talk).
+import BaseLayout from './BaseLayout.astro';
+import Tags from '../components/Tags.astro';
+import { formatDate } from '../lib/utils';
+
+interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  kicker: string;
+  backHref: string;
+  backLabel: string;
+  accent: string;
+  /** Type de contenu, utilisé comme filtre dans la recherche. */
+  kind: string;
+  meta?: string[];
+  tags?: string[];
+  canonical?: string;
+}
+const { title, description, date, kicker, backHref, backLabel, accent, kind, meta = [], tags = [], canonical } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} accent={accent} type="article" canonical={canonical}>
+  <article class="container-narrow" data-pagefind-body data-pagefind-filter={`type:${kind}`}>
+    <header class="page-head">
+      <a class="back" href={backHref} data-pagefind-ignore>← {backLabel}</a>
+      <span class="kicker">{kicker}</span>
+      <h1>{title}</h1>
+      {description && <p>{description}</p>}
+      <div class="meta">
+        <time datetime={date.toISOString()}>{formatDate(date)}</time>
+        {meta.map((m) => <span>· {m}</span>)}
+      </div>
+      <Tags tags={tags} />
+    </header>
+    <slot name="before" />
+    <div class="prose">
+      <slot />
+    </div>
+    <slot name="after" />
+  </article>
+</BaseLayout>
+
+<style>
+  .back {
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    text-decoration: none;
+    color: var(--muted);
+  }
+  .meta {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+</style>

@@ -1,0 +1,46 @@
+---
+import { tagHref } from '../lib/tags';
+
+interface Props {
+  tags: string[];
+  /** false quand les tags sont déjà à l'intérieur d'un lien (carte cliquable). */
+  linked?: boolean;
+}
+const { tags, linked = true } = Astro.props;
+---
+
+{
+  tags.length > 0 && (
+    <ul class="tags">
+      {tags.map((t) => (
+        <li>
+          {linked ? (
+            <a class="badge" href={tagHref(t)}>
+              #{t}
+            </a>
+          ) : (
+            <span class="badge">#{t}</span>
+          )}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .tags {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0;
+    margin: 0.75rem 0 0;
+  }
+  a.badge {
+    text-decoration: none;
+  }
+  a.badge:hover {
+    background: var(--tint);
+    color: var(--accent);
+  }
+</style>
